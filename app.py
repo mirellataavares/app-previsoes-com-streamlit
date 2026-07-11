@@ -36,118 +36,133 @@ opcao = st.sidebar.radio(
 
 st.divider()
 
+
 # =====================================================================
-# 1. IA DAS NOTAS ESCOLARES
+# FUNÇÕES COM CACHE (Evitam o travamento de memória no servidor)
 # =====================================================================
+@st.cache_resource
+def treinar_modelos_regressao(tipo_contexto):
+    """Treina os modelos de Regressão Linear apenas uma vez e guarda na memória."""
+    if tipo_contexto == 1:  # Notas Escolares
+        df = pd.DataFrame(
+            {"notas": [1, 2, 4, 6, 8, 10], "horas": [2, 4, 5, 7, 9, 10]}
+        )
+        return LinearRegression().fit(df[["horas"]], df["notas"]), df
+    elif tipo_contexto == 2:  # Gamer
+        df = pd.DataFrame(
+            {"horas_jogo": [1, 2, 4, 6, 8, 10], "cansaco": [1, 2, 3, 5, 8, 10]}
+        )
+        return LinearRegression().fit(df[["horas_jogo"]], df["cansaco"]), df
+    elif tipo_contexto == 3:  # Sorvete
+        df = pd.DataFrame(
+            {
+                "temperatura": [18, 20, 24, 27, 30, 35],
+                "vendas": [20, 25, 40, 55, 70, 100],
+            }
+        )
+        return LinearRegression().fit(df[["temperatura"]], df["vendas"]), df
+    elif tipo_contexto == 5:  # Pet Feliz
+        df = pd.DataFrame(
+            {"passeios": [1, 2, 3, 4, 5], "felicidade": [2, 4, 5, 8, 10]}
+        )
+        return LinearRegression().fit(df[["passeios"]], df["felicidade"]), df
+    elif tipo_contexto == 6:  # Filme Bom
+        df = pd.DataFrame(
+            {"duracao": [80, 90, 100, 110, 120], "nota": [4, 5, 7, 8, 9]}
+        )
+        return LinearRegression().fit(df[["duracao"]], df["nota"]), df
+    elif tipo_contexto == 7:  # Pizza
+        df = pd.DataFrame(
+            {"tamanho": [20, 25, 30, 35, 40], "preco": [20, 30, 40, 50, 60]}
+        )
+        return LinearRegression().fit(df[["tamanho"]], df["preco"]), df
+    elif tipo_contexto == 8:  # Música Viral
+        df = pd.DataFrame(
+            {"bpm": [80, 90, 100, 120, 140], "viral": [1, 2, 4, 7, 10]}
+        )
+        return LinearRegression().fit(df[["bpm"]], df["viral"]), df
+    elif tipo_contexto == 9:  # Café
+        df = pd.DataFrame(
+            {"xicaras": [1, 2, 3, 4, 5], "energia": [2, 4, 6, 8, 10]}
+        )
+        return LinearRegression().fit(df[["xicaras"]], df["energia"]), df
+
+
+@st.cache_resource
+def treinar_modelos_classificacao(tipo_contexto):
+    """Treina os modelos de Classificação Logística apenas uma vez e guarda na memória."""
+    if tipo_contexto == 4:  # Ninja
+        df = pd.DataFrame(
+            {"faltas": [0, 1, 2, 5, 7, 10], "resultado": [1, 1, 1, 0, 0, 0]}
+        )
+        return LogisticRegression().fit(df[["faltas"]], df["resultado"]), df
+    elif tipo_contexto == 10:  # Heróis
+        df = pd.DataFrame(
+            {"forca": [1, 2, 3, 7, 8, 10], "heroi": [0, 0, 0, 1, 1, 1]}
+        )
+        return LogisticRegression().fit(df[["forca"]], df["heroi"]), df
+
+
+# =====================================================================
+# RENDERIZAÇÃO DOS CONTEXTOS
+# =====================================================================
+
 if opcao == "1. IA das Notas Escolares":
     st.header("📚 Contexto 1: IA das Notas Escolares")
     st.write("**Objetivo:** Prever a nota do aluno baseado nas horas de estudo.")
 
-    estudos = pd.DataFrame(
-        {"notas": [1, 2, 4, 6, 8, 10], "horas": [2, 4, 5, 7, 9, 10]}
-    )
-    st.write("Dados de exemplo usados para o treino:", estudos)
-
-    X = estudos[["horas"]]
-    y = estudos["notas"]
-    modelo = LinearRegression().fit(X, y)
+    modelo, dados = treinar_modelos_regressao(1)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
     horas_teste = st.slider(
-        "Quantas horas você quer simular de estudo?",
-        min_value=0,
-        max_value=15,
-        value=6,
+        "Quantas horas você quer simular de estudo?", 0, 15, 6
     )
-    # Criando um DataFrame idêntico ao de treino para evitar o erro de memória
-    X_teste = pd.DataFrame({"horas": [horas_teste]})
-    previsao = modelo.predict(X_teste)
-
+    previsao = modelo.predict(pd.DataFrame({"horas": [horas_teste]}))
     st.success(
         f"📝 **Previsão da IA:** Se o aluno estudar **{horas_teste} horas**, a nota estimada será **{previsao[0]:.2f}**."
     )
 
-# =====================================================================
-# 2. DETECTOR DE SONO GAMER
-# =====================================================================
 elif opcao == "2. Detector de Sono Gamer":
     st.header("🎮 Contexto 2: Detector de Sono Gamer")
     st.write(
         "**Objetivo:** Prever o nível de cansaço baseado nas horas jogando."
     )
 
-    gamer = pd.DataFrame(
-        {"horas_jogo": [1, 2, 4, 6, 8, 10], "cansaco": [1, 2, 3, 5, 8, 10]}
-    )
-    st.write("Dados de exemplo usados para o treino:", gamer)
+    modelo, dados = treinar_modelos_regressao(2)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = gamer[["horas_jogo"]]
-    y = gamer["cansaco"]
-    modelo = LinearRegression().fit(X, y)
-
-    horas_teste = st.slider(
-        "Quantas horas jogando?", min_value=0, max_value=15, value=5
-    )
-    X_teste = pd.DataFrame({"horas_jogo": [horas_teste]})
-    previsao = modelo.predict(X_teste)
-
+    horas_teste = st.slider("Quantas horas jogando?", 0, 15, 5)
+    previsao = modelo.predict(pd.DataFrame({"horas_jogo": [horas_teste]}))
     st.warning(
         f"🥱 **Previsão da IA:** Jogando por **{horas_teste} horas**, o nível de cansaço estimado é **{previsao[0]:.2f}/10**."
     )
 
-# =====================================================================
-# 3. IA DO SORVETE
-# =====================================================================
 elif opcao == "3. IA do Sorvete":
     st.header("🍦 Contexto 3: IA do Sorvete")
     st.write(
         "**Objetivo:** Prever a quantidade de sorvetes vendidos pela temperatura ambiente."
     )
 
-    sorvete = pd.DataFrame(
-        {
-            "temperatura": [18, 20, 24, 27, 30, 35],
-            "vendas": [20, 25, 40, 55, 70, 100],
-        }
-    )
-    st.write("Dados de exemplo usados para o treino:", sorvete)
+    modelo, dados = treinar_modelos_regressao(3)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = sorvete[["temperatura"]]
-    y = sorvete["vendas"]
-    modelo = LinearRegression().fit(X, y)
-
-    temp_teste = st.slider(
-        "Qual é a temperatura do dia (°C)?", min_value=10, max_value=45, value=25
-    )
-    X_teste = pd.DataFrame({"temperatura": [temp_teste]})
-    previsao = modelo.predict(X_teste)
-
+    temp_teste = st.slider("Qual é a temperatura do dia (°C)?", 10, 45, 25)
+    previsao = modelo.predict(pd.DataFrame({"temperatura": [temp_teste]}))
     st.info(
         f"☀️ **Previsão da IA:** Com uma temperatura de **{temp_teste}°C**, a previsão é vender aproximadamente **{previsao[0]:.0f} sorvetes**."
     )
 
-# =====================================================================
-# 4. DETECTOR DE APROVAÇÃO NINJA
-# =====================================================================
 elif opcao == "4. Detector de Aprovação Ninja":
     st.header("🥷 Contexto 4: Detector de Aprovação Ninja")
     st.write(
         "**Objetivo:** Classificar se o aluno será aprovado (1) ou reprovado (0) com base em suas faltas."
     )
 
-    alunos = pd.DataFrame(
-        {"faltas": [0, 1, 2, 5, 7, 10], "resultado": [1, 1, 1, 0, 0, 0]}
-    )
-    st.write("Dados de exemplo usados para o treino:", alunos)
+    modelo, dados = treinar_modelos_classificacao(4)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = alunos[["faltas"]]
-    y = alunos["resultado"]
-    modelo = LogisticRegression().fit(X, y)
-
-    faltas_teste = st.slider(
-        "Número de faltas do aluno:", min_value=0, max_value=15, value=3
-    )
-    X_teste = pd.DataFrame({"faltas": [faltas_teste]})
-    previsao = modelo.predict(X_teste)
+    faltas_teste = st.slider("Número de faltas do aluno:", 0, 15, 3)
+    previsao = modelo.predict(pd.DataFrame({"faltas": [faltas_teste]}))
     status = "Aprovado ✅" if previsao[0] == 1 else "Reprovado ❌"
 
     if previsao[0] == 1:
@@ -159,168 +174,84 @@ elif opcao == "4. Detector de Aprovação Ninja":
             f"Resultados com **{faltas_teste} faltas**: A IA classificou o aluno como **{status}**."
         )
 
-# =====================================================================
-# 5. IA DO PET FELIZ
-# =====================================================================
 elif opcao == "5. IA do Pet Feliz":
     st.header("🐶 Contexto 5: IA do Pet Feliz")
     st.write("**Objetivo:** Prever a felicidade do cachorro usando passeios.")
 
-    pets = pd.DataFrame(
-        {"passeios": [1, 2, 3, 4, 5], "felicidade": [2, 4, 5, 8, 10]}
-    )
-    st.write("Dados de exemplo usados para o treino:", pets)
+    modelo, dados = treinar_modelos_regressao(5)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = pets[["passeios"]]
-    y = pets["felicidade"]
-    modelo = LinearRegression().fit(X, y)
-
-    passeios_teste = st.slider(
-        "Quantos passeios o pet vai dar hoje?", min_value=0, max_value=7, value=3
-    )
-    X_teste = pd.DataFrame({"passeios": [passeios_teste]})
-    previsao = modelo.predict(X_teste)
-
+    passeios_teste = st.slider("Quantos passeios o pet vai dar hoje?", 0, 7, 3)
+    previsao = modelo.predict(pd.DataFrame({"passeios": [passeios_teste]}))
     st.success(
         f"🐾 **Previsão da IA:** Dando **{passeios_teste} passeios**, o nível de felicidade do seu pet será de **{previsao[0]:.1f}/10**."
     )
 
-# =====================================================================
-# 6. DETECTOR DE FILME BOM
-# =====================================================================
 elif opcao == "6. Detector de Filme Bom":
     st.header("🎬 Contexto 6: Detector de Filme Bom")
     st.write("**Objetivo:** Prever a nota do filme usando a duração dele.")
 
-    filmes = pd.DataFrame(
-        {"duracao": [80, 90, 100, 110, 120], "nota": [4, 5, 7, 8, 9]}
-    )
-    st.write("Dados de exemplo usados para o treino:", filmes)
+    modelo, dados = treinar_modelos_regressao(6)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = filmes[["duracao"]]
-    y = filmes["nota"]
-    modelo = LinearRegression().fit(X, y)
-
-    duracao_teste = st.slider(
-        "Qual a duração do filme (em minutos)?",
-        min_value=60,
-        max_value=180,
-        value=105,
-    )
-    X_teste = pd.DataFrame({"duracao": [duracao_teste]})
-    previsao = modelo.predict(X_teste)
-
+    duracao_teste = st.slider("Qual a duração do filme (em minutos)?", 60, 180, 105)
+    previsao = modelo.predict(pd.DataFrame({"duracao": [duracao_teste]}))
     st.info(
         f"🍿 **Previsão da IA:** Um filme de **{duracao_teste} minutos** deve receber a nota estimada de **{previsao[0]:.1f}/10**."
     )
 
-# =====================================================================
-# 7. IA DA PIZZA
-# =====================================================================
 elif opcao == "7. IA da Pizza":
     st.header("🍕 Contexto 7: IA da Pizza")
     st.write("**Objetivo:** Prever o preço da pizza pelo seu tamanho em cm.")
 
-    pizza = pd.DataFrame(
-        {"tamanho": [20, 25, 30, 35, 40], "preco": [20, 30, 40, 50, 60]}
-    )
-    st.write("Dados de exemplo usados para o treino:", pizza)
+    modelo, dados = treinar_modelos_regressao(7)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = pizza[["tamanho"]]
-    y = pizza["preco"]
-    modelo = LinearRegression().fit(X, y)
-
-    tamanho_teste = st.slider(
-        "Qual o tamanho da pizza (diâmetro em cm)?",
-        min_value=15,
-        max_value=50,
-        value=32,
-    )
-    X_teste = pd.DataFrame({"tamanho": [tamanho_teste]})
-    previsao = modelo.predict(X_teste)
-
+    tamanho_teste = st.slider("Qual o tamanho da pizza (diâmetro em cm)?", 15, 50, 32)
+    previsao = modelo.predict(pd.DataFrame({"tamanho": [tamanho_teste]}))
     st.success(
         f"💵 **Previsão da IA:** Uma pizza com tamanho de **{tamanho_teste} cm** deve custar por volta de **R$ {previsao[0]:.2f}**."
     )
 
-# =====================================================================
-# 8. DETECTOR DE MÚSICA VIRAL
-# =====================================================================
 elif opcao == "8. Detector de Música Viral":
     st.header("🎵 Contexto 8: Detector de Música Viral")
     st.write(
         "**Objetivo:** Prever o potencial ou chance de uma música viralizar dado o seu ritmo (BPM)."
     )
 
-    musica = pd.DataFrame(
-        {"bpm": [80, 90, 100, 120, 140], "viral": [1, 2, 4, 7, 10]}
-    )
-    st.write("Dados de exemplo usados para o treino:", musica)
+    modelo, dados = treinar_modelos_regressao(8)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = musica[["bpm"]]
-    y = musica["viral"]
-    modelo = LinearRegression().fit(X, y)
-
-    bpm_teste = st.slider(
-        "Quantos BPM (Batidas Por Minuto) tem a música?",
-        min_value=60,
-        max_value=200,
-        value=110,
-    )
-    X_teste = pd.DataFrame({"bpm": [bpm_teste]})
-    previsao = modelo.predict(X_teste)
-
+    bpm_teste = st.slider("Quantos BPM (Batidas Por Minuto) tem a música?", 60, 200, 110)
+    previsao = modelo.predict(pd.DataFrame({"bpm": [bpm_teste]}))
     st.warning(
         f"🚀 **Previsão da IA:** Uma música com **{bpm_teste} BPM** terá um índice de viralização de **{previsao[0]:.1f}/10**."
     )
 
-# =====================================================================
-# 9. IA DA ENERGIA DO CAFÉ
-# =====================================================================
 elif opcao == "9. IA da Energia do Café":
     st.header("☕ Contexto 9: IA da Energia do Café")
     st.write("**Objetivo:** Prever o nível de energia baseado em xícaras tomadas.")
 
-    cafe = pd.DataFrame({"xicaras": [1, 2, 3, 4, 5], "energia": [2, 4, 6, 8, 10]})
-    st.write("Dados de exemplo usados para o treino:", cafe)
+    modelo, dados = treinar_modelos_regressao(9)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = cafe[["xicaras"]]
-    y = cafe["energia"]
-    modelo = LinearRegression().fit(X, y)
-
-    xicaras_teste = st.slider(
-        "Quantas xícaras de café tomadas?", min_value=0.0, max_value=10.0, value=3.5
-    )
-    X_teste = pd.DataFrame({"xicaras": [xicaras_teste]})
-    previsao = modelo.predict(X_teste)
-
+    xicaras_teste = st.slider("Quantas xícaras de café tomadas?", 0.0, 10.0, 3.5)
+    previsao = modelo.predict(pd.DataFrame({"xicaras": [xicaras_teste]}))
     st.info(
         f"⚡ **Previsão da IA:** Tomando **{xicaras_teste} xícaras** de café, o nível de energia previsto é de **{previsao[0]:.1f}**."
     )
 
-# =====================================================================
-# 10. REDE NEURAL DOS SUPER-HERÓIS
-# =====================================================================
 elif opcao == "10. Rede Neural dos Super-Heróis":
     st.header("🦸‍♂️ Contexto 10: Rede Neural dos Super-Heróis")
     st.write(
         "**Objetivo:** Classificar se um herói é Forte (1) ou Fraco (0) com base no seu nível bruto de força."
     )
 
-    herois = pd.DataFrame(
-        {"forca": [1, 2, 3, 7, 8, 10], "heroi": [0, 0, 0, 1, 1, 1]}
-    )
-    st.write("Dados de exemplo usados para o treino:", herois)
+    modelo, dados = treinar_modelos_classificacao(10)
+    st.write("Dados de exemplo usados para o treino:", dados)
 
-    X = herois[["forca"]]
-    y = herois["heroi"]
-    modelo = LogisticRegression().fit(X, y)
-
-    forca_teste = st.slider(
-        "Escolha o nível de força do Herói:", min_value=1, max_value=15, value=5
-    )
-    X_teste = pd.DataFrame({"forca": [forca_teste]})
-    previsao = modelo.predict(X_teste)
+    forca_teste = st.slider("Escolha o nível de força do Herói:", 1, 15, 5)
+    previsao = modelo.predict(pd.DataFrame({"forca": [forca_teste]}))
     status = "Forte 💪" if previsao[0] == 1 else "Fraco 🔍"
 
     if previsao[0] == 1:
