@@ -48,19 +48,19 @@ if opcao == "1. IA das Notas Escolares":
     )
     st.write("Dados de exemplo usados para o treino:", estudos)
 
-    # Criando o modelo
     X = estudos[["horas"]]
     y = estudos["notas"]
     modelo = LinearRegression().fit(X, y)
 
-    # Interatividade com o usuário
     horas_teste = st.slider(
         "Quantas horas você quer simular de estudo?",
         min_value=0,
         max_value=15,
         value=6,
     )
-    previsao = modelo.predict([[horas_teste]])
+    # Criando um DataFrame idêntico ao de treino para evitar o erro de memória
+    X_teste = pd.DataFrame({"horas": [horas_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.success(
         f"📝 **Previsão da IA:** Se o aluno estudar **{horas_teste} horas**, a nota estimada será **{previsao[0]:.2f}**."
@@ -87,7 +87,8 @@ elif opcao == "2. Detector de Sono Gamer":
     horas_teste = st.slider(
         "Quantas horas jogando?", min_value=0, max_value=15, value=5
     )
-    previsao = modelo.predict([[horas_teste]])
+    X_teste = pd.DataFrame({"horas_jogo": [horas_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.warning(
         f"🥱 **Previsão da IA:** Jogando por **{horas_teste} horas**, o nível de cansaço estimado é **{previsao[0]:.2f}/10**."
@@ -117,7 +118,8 @@ elif opcao == "3. IA do Sorvete":
     temp_teste = st.slider(
         "Qual é a temperatura do dia (°C)?", min_value=10, max_value=45, value=25
     )
-    previsao = modelo.predict([[temp_teste]])
+    X_teste = pd.DataFrame({"temperatura": [temp_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.info(
         f"☀️ **Previsão da IA:** Com uma temperatura de **{temp_teste}°C**, a previsão é vender aproximadamente **{previsao[0]:.0f} sorvetes**."
@@ -144,7 +146,8 @@ elif opcao == "4. Detector de Aprovação Ninja":
     faltas_teste = st.slider(
         "Número de faltas do aluno:", min_value=0, max_value=15, value=3
     )
-    previsao = modelo.predict([[faltas_teste]])
+    X_teste = pd.DataFrame({"faltas": [faltas_teste]})
+    previsao = modelo.predict(X_teste)
     status = "Aprovado ✅" if previsao[0] == 1 else "Reprovado ❌"
 
     if previsao[0] == 1:
@@ -175,7 +178,8 @@ elif opcao == "5. IA do Pet Feliz":
     passeios_teste = st.slider(
         "Quantos passeios o pet vai dar hoje?", min_value=0, max_value=7, value=3
     )
-    previsao = modelo.predict([[passeios_teste]])
+    X_teste = pd.DataFrame({"passeios": [passeios_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.success(
         f"🐾 **Previsão da IA:** Dando **{passeios_teste} passeios**, o nível de felicidade do seu pet será de **{previsao[0]:.1f}/10**."
@@ -203,7 +207,8 @@ elif opcao == "6. Detector de Filme Bom":
         max_value=180,
         value=105,
     )
-    previsao = modelo.predict([[duracao_teste]])
+    X_teste = pd.DataFrame({"duracao": [duracao_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.info(
         f"🍿 **Previsão da IA:** Um filme de **{duracao_teste} minutos** deve receber a nota estimada de **{previsao[0]:.1f}/10**."
@@ -231,7 +236,8 @@ elif opcao == "7. IA da Pizza":
         max_value=50,
         value=32,
     )
-    previsao = modelo.predict([[tamanho_teste]])
+    X_teste = pd.DataFrame({"tamanho": [tamanho_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.success(
         f"💵 **Previsão da IA:** Uma pizza com tamanho de **{tamanho_teste} cm** deve custar por volta de **R$ {previsao[0]:.2f}**."
@@ -261,7 +267,8 @@ elif opcao == "8. Detector de Música Viral":
         max_value=200,
         value=110,
     )
-    previsao = modelo.predict([[bpm_teste]])
+    X_teste = pd.DataFrame({"bpm": [bpm_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.warning(
         f"🚀 **Previsão da IA:** Uma música com **{bpm_teste} BPM** terá um índice de viralização de **{previsao[0]:.1f}/10**."
@@ -284,7 +291,8 @@ elif opcao == "9. IA da Energia do Café":
     xicaras_teste = st.slider(
         "Quantas xícaras de café tomadas?", min_value=0.0, max_value=10.0, value=3.5
     )
-    previsao = modelo.predict([[xicaras_teste]])
+    X_teste = pd.DataFrame({"xicaras": [xicaras_teste]})
+    previsao = modelo.predict(X_teste)
 
     st.info(
         f"⚡ **Previsão da IA:** Tomando **{xicaras_teste} xícaras** de café, o nível de energia previsto é de **{previsao[0]:.1f}**."
@@ -311,7 +319,8 @@ elif opcao == "10. Rede Neural dos Super-Heróis":
     forca_teste = st.slider(
         "Escolha o nível de força do Herói:", min_value=1, max_value=15, value=5
     )
-    previsao = modelo.predict([[forca_teste]])
+    X_teste = pd.DataFrame({"forca": [forca_teste]})
+    previsao = modelo.predict(X_teste)
     status = "Forte 💪" if previsao[0] == 1 else "Fraco 🔍"
 
     if previsao[0] == 1:
