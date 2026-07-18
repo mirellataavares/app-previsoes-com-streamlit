@@ -3,14 +3,14 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression, LogisticRegression
 import streamlit as st
 
-# Configuração da página do Streamlit
+
 st.set_page_config(
     page_title="Universo da IA - 10 Exemplos Práticos",
     page_icon="🤖",
     layout="centered",
 )
 
-# Título Principal do Aplicativo
+
 st.title("🤖 O Universo da Inteligência Artificial")
 st.markdown(
     "Bem-vindo! Este aplicativo foi feito para pessoas curiosas e comprometidas em entender como as máquinas aprendem. "
@@ -37,9 +37,7 @@ opcao = st.sidebar.radio(
 st.divider()
 
 
-# =====================================================================
-# FUNÇÕES COM CACHE (Evitam o travamento de memória no servidor)
-# =====================================================================
+
 @st.cache_resource
 def treinar_modelos_regressao(tipo_contexto):
     """Treina os modelos de Regressão Linear apenas uma vez e guarda na memória."""
@@ -103,9 +101,6 @@ def treinar_modelos_classificacao(tipo_contexto):
         return LogisticRegression().fit(df[["forca"]], df["heroi"]), df
 
 
-# =====================================================================
-# RENDERIZAÇÃO DOS CONTEXTOS
-# =====================================================================
 
 if opcao == "1. IA das Notas Escolares":
     st.header("📚 Contexto 1: IA das Notas Escolares")
